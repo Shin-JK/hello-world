@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="common.category">
+     <select id="selectproduct_hierarchy" resultType="hashmap">
+        <![CDATA[
+            SELECT mph.category_id
+					,mph.category_name
+			 FROM mega_product_hierarchy mph
+			WHERE 1 = 1
+			   AND mph.usage_flag = 'Y'
+		]]>
+		<choose>
+         		<when test="category_group_id != null">
+			   		AND mph.category_group_id = #{category_group_id}
+			    </when>
+			    <when test="category_group_id == null">
+			    	AND mph.category_group_id = '00'
+			    </when>
+		</choose>
+		<![CDATA[
+			ORDER BY mph.category_id
+        ]]>
+    </select>
+</mapper>

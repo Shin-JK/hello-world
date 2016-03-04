@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="manage.menu">
+     <select id="selectmenuList" resultType="hashmap">
+        <![CDATA[
+            SELECT menu_code
+            		, parent_menu_code
+            		, menu_name
+            		, menu_path
+            		, usage_flag
+			 FROM mega_menu
+		    ORDER BY menu_code
+		]]>
+    </select>
+    
+    <insert id="insertmenu" parameterType="com.megamart.manage.entity.MenuEntity">
+    	<![CDATA[
+    		INSERT INTO mega_menu(
+    			menu_code
+    		   , parent_menu_code
+    		   , menu_name
+    		   , menu_path
+    		   , usge_flag
+    		 ) VALUES (
+    		   #{menu_code}
+    		  ,#{parent_menu_code}
+    		  ,#{menu_name}
+    		  ,#{menu_path}
+    		  ,#{usge_flag}
+    		 )
+    	]]>
+    </insert>
+    
+    <update id="updatemenu" parameterType="com.megamart.manage.entity.MenuEntity">
+    	<![CDATA[
+    		UPDATE mega_menu
+    		     SET parent_menu_code = #{parent_menu_code}
+            		, menu_name = #{menu_name}
+            		, menu_path = #{menu_path}
+            		, usage_flag = #{usage_flag}
+            WHERE menu_code = #{menu_code}	
+    	]]>
+    </update>
+    
+    <select id="selectparentmenuList" resultType="hashmap">
+        <![CDATA[
+            SELECT menu_code
+            		, menu_name
+			 FROM mega_menu
+			WHERE menu_code = parent_menu_code
+			    AND usage_flag = 'Y'
+		    ORDER BY menu_code
+		]]>
+    </select>
+    
+    <select id="selectnewsubmenucode" resultType="String">
+        <![CDATA[
+            SELECT CONCAT(#{parent_menu_code}, LPAD(RIGHT(MAX(menu_code), 2) + 1, 2,'0')) newvalue
+				FROM mega_menu
+				WHERE parent_menu_code = #{parent_menu_code}			    
+		]]>
+    </select>
+    
+    <select id="selectnewtopmenucode" resultType="String">
+        <![CDATA[
+            SELECT LPAD(MAX(menu_code) + 1, 2,'0') newvalue
+			FROM mega_menu
+			WHERE parent_menu_code = menu_code	    
+		]]>
+    </select>
+</mapper>

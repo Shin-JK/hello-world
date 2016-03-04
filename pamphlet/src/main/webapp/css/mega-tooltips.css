@@ -1,0 +1,19 @@
+@CHARSET "UTF-8";
+.tooltip-image{
+	max-width: 500px; 
+	width: 500px; 
+	height:auto;
+	filter:alpha(opacity=100) !important;
+	opacity: 1.0 !important; 
+	-moz-opacity:1.0 !important; 
+}
+.tooltip-inner { 
+	max-width: 500px !important; 
+	width:520px; 
+	background-color: #fff;
+	border: solid 1px #ccc;
+}
+.tooltip.in {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}

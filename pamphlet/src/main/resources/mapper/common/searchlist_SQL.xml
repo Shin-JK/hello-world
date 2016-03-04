@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common.searchlist">
+	<select id="selectPDCategoryList" resultType="hashmap">
+		<![CDATA[
+			SELECT flag, name
+			 FROM mega_storytelling_category msc
+			WHERE msc.master_flag = 'PD'
+			ORDER BY msc.sort_seq
+		]]>
+	</select>
+
+
+	<select id="selectPamphletImageTotcnt" resultType="int">
+		<![CDATA[
+			SELECT count(*) totcnt
+			 FROM mega_attach_file maf
+			         ,mega_pamphlet mp
+			WHERE maf.category_flag = 'PP' 
+			   AND maf.file_type = 'IMAGE' 
+			   AND mp.usage_flag = 'Y'
+			   AND maf.category_idx = mp.idx 
+			   
+		]]>
+			<choose>
+	        	<when test="keyword != null">
+	        		<![CDATA[AND (mp.title LIKE CONCAT('%',#{keyword},'%') OR mp.tag LIKE CONCAT('%',#{keyword},'%'))]]>
+	        	</when>
+			</choose>
+	</select>
+
+	<select id="selectPamphletImage" resultType="hashmap">
+		<![CDATA[
+			SELECT maf.category_flag
+			         ,maf.category_idx
+			         ,maf.seq
+			         ,maf.file_name
+			         ,maf.url
+			         ,maf.s3_file_name
+			         ,mp.title
+			         ,date_format(mp.created_date, '%Y-%m-%d') created_date
+			FROM mega_attach_file maf
+			        ,mega_pamphlet mp
+		   WHERE maf.category_flag = 'PP' 
+			  AND maf.file_type = 'IMAGE' 
+			  AND mp.usage_flag = 'Y'
+			  AND maf.category_idx = mp.idx 
+		]]>
+			<choose>
+	        	<when test="keyword != null">
+	        		<![CDATA[AND (mp.title LIKE CONCAT('%',#{keyword},'%') OR mp.tag LIKE CONCAT('%',#{keyword},'%'))]]>
+	        	</when>
+			</choose>
+		<![CDATA[ 
+		   ORDER BY maf.category_idx desc, maf.seq
+		   LIMIT #{limitFrom}, #{countperpage}
+		]]>
+	</select>
+	
+	<select id="selectPamphletTitleTotcnt" resultType="int">
+		<![CDATA[
+			SELECT count(*) totcnt
+            FROM mega_pamphlet mp, mega_store ms
+          WHERE 1 = 1 
+             AND mp.store = ms.store_no
+             AND mp.usage_flag = 'Y'
+        ]]>
+        <choose>
+	       	<when test="keyword != null">
+             <![CDATA[AND (mp.title LIKE CONCAT('%',#{keyword},'%') OR mp.tag LIKE CONCAT('%',#{keyword},'%'))]]>
+            </when>
+        </choose>
+	</select>
+		
+	<select id="selectPamphletTitle" resultType="hashmap">
+		<![CDATA[
+			SELECT mp.idx
+			        ,mp.title
+			        ,mp.tag AS text
+			        ,date_format(mp.created_date, '%Y-%m-%d') created_date
+            FROM mega_pamphlet mp, mega_store ms
+          WHERE 1 = 1
+             AND mp.store = ms.store_no
+             AND mp.usage_flag = 'Y'
+          ]]>
+        <choose>
+	       	<when test="keyword != null">
+             <![CDATA[AND (mp.title LIKE CONCAT('%',#{keyword},'%') OR mp.tag LIKE CONCAT('%',#{keyword},'%'))]]>
+            </when>
+        </choose>
+       <![CDATA[
+          ORDER BY mp.idx desc
+          LIMIT #{limitFrom}, #{countperpage}
+		]]>
+	</select>
+	
+	<select id="selectProductsImageTotCnt" resultType="int">
+		<![CDATA[
+			SELECT count(*) totcnt
+			 FROM mega_attach_file maf
+			 		, mega_products mp
+			WHERE maf.category_flag = 'PD' 
+			   AND maf.file_type = 'IMAGE'
+			   AND maf.category_idx = mp.idx
+			   AND mp.category1 = #{category}
+		]]>
+		<choose>
+	       	<when test="keyword != null">
+				<![CDATA[AND (mp.product_name LIKE CONCAT('%',#{keyword},'%') OR mp.tag LIKE CONCAT('%',#{keyword},'%') 
+				                    OR mp.copy LIKE CONCAT('%',#{keyword},'%') OR mp.story_telling LIKE CONCAT('%',#{keyword},'%')
+				                    OR mp.selling_point LIKE CONCAT('%',#{keyword},'%'))]]>
+			</when>
+		</choose>
+	</select>
+	
+	<select id="selectProductsImageList" resultType="hashmap">
+		<![CDATA[
+			SELECT maf.category_flag
+			         ,maf.category_idx
+			         ,maf.seq
+			         ,maf.file_name
+			         ,maf.url
+			         ,maf.s3_file_name
+			         ,mp.product_name AS title
+			         ,date_format(mp.created_date, '%Y-%m-%d') created_date
+			 FROM mega_attach_file maf
+			        , mega_products mp
+			WHERE maf.category_flag = 'PD' 
+			   AND maf.file_type = 'IMAGE'
+			   AND maf.category_idx = mp.idx
+			   AND mp.category1 = #{category}
+		]]>
+		<choose>
+	       	<when test="keyword != null">
+				<![CDATA[AND (mp.product_name LIKE CONCAT('%',#{keyword},'%') OR mp.tag LIKE CONCAT('%',#{keyword},'%') 
+				                    OR mp.copy LIKE CONCAT('%',#{keyword},'%') OR mp.story_telling LIKE CONCAT('%',#{keyword},'%')
+				                    OR mp.selling_point LIKE CONCAT('%',#{keyword},'%'))]]>
+			</when>
+		</choose>
+		<![CDATA[ 
+		   ORDER BY maf.category_idx desc, maf.seq
+		   LIMIT #{limitFrom}, #{countperpage}
+		]]>
+	</select>
+	
+	<select id="selectProductsSellingTotCnt" resultType="int">
+		<![CDATA[
+			SELECT count(*) totcnt
+			 FROM mega_products mg
+			WHERE 1 = 1 
+			   AND mg.category1 = #{category}
+		]]>
+		<choose>
+	       	<when test="keyword != null">
+	       	<![CDATA[
+			   AND (mg.product_name LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.tag LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.copy LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.story_telling LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.selling_point LIKE CONCAT('%',#{keyword},'%'))
+			]]>
+			</when>
+		</choose>
+	</select>
+	
+	<select id="selectProductsSellingList" resultType="hashmap">
+		<![CDATA[
+			SELECT mg.idx
+			        ,mg.product_name AS title
+			        ,mg.selling_point AS text
+			        ,date_format(mg.created_date, '%Y-%m-%d') created_date
+			 FROM mega_products mg
+			WHERE 1 = 1 
+			   AND mg.category1 = #{category}
+		]]>
+		<choose>
+	       	<when test="keyword != null">
+	       	<![CDATA[
+			   AND (mg.product_name LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.tag LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.copy LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.story_telling LIKE CONCAT('%',#{keyword},'%') 
+			          OR mg.selling_point LIKE CONCAT('%',#{keyword},'%'))
+			]]>
+			</when>
+		</choose>
+		ORDER BY mg.idx desc
+		LIMIT #{limitFrom}, #{countperpage}
+	</select>
+</mapper>

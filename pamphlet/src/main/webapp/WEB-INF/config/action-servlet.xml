@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<context:component-scan base-package="com.megamart"></context:component-scan>
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean id="loggerInterceptor" class="com.megamart.logger.LoggerInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver"
+		p:order="0" />
+	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />    
+
+	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"
+		p:order="2" p:viewClass="org.springframework.web.servlet.view.JstlView"
+		p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />
+		
+	<!-- Tiles View Resolver -->	
+	 <bean id="tilesviewResolver" class="org.springframework.web.servlet.view.tiles3.TilesViewResolver" 
+	 	p:order="1" p:viewClass="org.springframework.web.servlet.view.tiles3.TilesView"/> 
+      <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer"> 
+      	  <property name="definitions"> 
+                <list> 
+                     <value>/WEB-INF/tiles/**/*-tiles.xml</value> 
+                </list> 
+           </property> 
+      </bean>  
+	
+
+	<!-- 파일 서버 업로드 시 -->
+	<!-- 
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>
+	 -->
+	<!-- Message 처리 -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="defaultEncoding" value="UTF-8"/>
+		<property name="basenames" value="WEB-INF/messages/message"></property>
+	</bean>
+</beans>

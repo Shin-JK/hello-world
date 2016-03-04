@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common.file">
+	<insert id="insertFile" parameterType="com.megamart.common.entity.AttachFileEntity">
+    	<![CDATA[
+    		INSERT INTO mega_attach_file (
+    			category_flag
+    			,category_idx
+    			,seq
+    			,file_name
+    			,file_size
+    			,url
+    			,file_type
+    			,s3_file_name
+    			,thumb1_file_name
+    			,thumb2_file_name
+    			,thumb1_url
+    			,thumb2_url
+    		) VALUES (
+    			#{category_flag}
+    			,#{category_idx}
+    			,#{seq}
+    			,#{file_name}
+    			,#{file_size}
+    			,#{url}
+    			,#{file_type}
+    			,#{s3_file_name}
+    			,#{thumb1_file_name}
+    			,#{thumb2_file_name}
+    			,#{thumb1_url}
+    			,#{thumb2_url}
+    		)
+    	]]>
+	</insert>
+	
+	<delete id="deleteFile" parameterType="com.megamart.common.entity.AttachFileEntity">
+		<![CDATA[
+			DELETE
+ 			 FROM mega_attach_file
+		    WHERE category_flag=#{category_flag} 
+		       AND category_idx= #{category_idx}
+		]]>
+	</delete>
+	<select id="selectImageFile" resultType="hashmap">
+		<![CDATA[
+			SELECT seq
+			         ,file_name
+			         ,file_size
+			         ,url
+			         ,file_type
+			         ,s3_file_name
+	    			 ,thumb1_file_name
+	    			 ,thumb2_file_name
+	    			 ,thumb1_url
+	    			 ,thumb2_url
+            FROM mega_attach_file maf
+           WHERE maf.category_flag = #{category_flag} 
+              AND maf.category_idx = #{category_idx}
+              AND maf.file_type = 'IMAGE'
+           ORDER BY maf.file_type
+                    ,maf.seq
+		]]>
+	</select>
+	<select id="selectPdfFile" resultType="hashmap">
+		<![CDATA[
+			SELECT seq
+			         ,file_name
+			         ,file_size
+			         ,url
+			         ,file_type
+			         ,s3_file_name
+            FROM mega_attach_file maf
+           WHERE maf.category_flag = #{category_flag} 
+              AND maf.category_idx = #{category_idx}
+              AND maf.file_type = 'PDF'
+           ORDER BY maf.file_type
+                    ,maf.seq
+		]]>
+	</select>
+	<select id="selectEtcFile" resultType="hashmap">
+		<![CDATA[
+			SELECT seq
+			         ,file_name
+			         ,file_size
+			         ,url
+			         ,file_type			         
+			         ,s3_file_name
+            FROM mega_attach_file maf
+           WHERE maf.category_flag = #{category_flag} 
+              AND maf.category_idx = #{category_idx}
+              AND maf.file_type = 'ETC'
+           ORDER BY maf.file_type
+                    ,maf.seq
+		]]>
+	</select>
+</mapper>

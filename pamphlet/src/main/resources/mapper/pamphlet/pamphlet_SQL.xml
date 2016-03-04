@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="pamphlet">
+    <select id="selectNewId" resultType="int">
+        <![CDATA[
+            SELECT nextval('mega_pamphlet_s1') AS newid
+        ]]>
+    </select>
+    
+    <select id="selectPamphletTotalCnt" resultType="int">
+        <![CDATA[
+            SELECT  count(*) totalcnt 
+              FROM mega_pamphlet mp, mega_store ms
+            WHERE 1=1
+                AND mp.usage_flag = 'Y'
+                AND mp.store = ms.store_no
+         ]]>
+         	<choose>
+         		<when test="key == 'all' ">
+         			<![CDATA[AND (title like concat('%',#{all},'%') OR reg_date = #{all} OR ms.store_name like concat('%',#{all},'%') OR mp.tag like concat('%',#{all},'%'))]]>
+         		</when>
+         	</choose>
+            <choose>
+	        	<when test="title != null">
+	        		<![CDATA[AND title like concat('%',#{title},'%')]]>
+	        	</when>
+	        	<when test="reg_date != null">
+	        		<![CDATA[AND reg_date = #{reg_date}]]>
+	        	</when>
+	        	<when test="store != null">
+	        		<![CDATA[AND ms.store_name like concat('%',#{store},'%')]]>
+	        	</when>
+	        </choose>
+    </select>    
+    
+    <select id="selectPamphletList" resultType="hashmap">
+        <![CDATA[   
+           SELECT mp.idx
+                    ,mp.title
+                    ,mp.reg_date
+                    ,mp.tag
+                    ,ms.store_name
+			 FROM mega_pamphlet mp, mega_store ms
+			WHERE 1=1
+			   AND mp.usage_flag = 'Y'
+			   AND mp.store = ms.store_no
+		]]>
+			<choose>
+         		<when test="key == 'all' ">
+         			<![CDATA[AND (title like concat('%',#{all},'%') OR reg_date = #{all} OR ms.store_name like concat('%',#{all},'%') OR mp.tag like concat('%',#{all},'%'))]]>
+         		</when>
+         	</choose>
+			<choose>
+	        	<when test="title != null">
+	        		<![CDATA[AND title like concat('%',#{title},'%')]]>
+	        	</when>
+	        	<when test="reg_date != null">
+	        		<![CDATA[AND reg_date = #{reg_date}]]>
+	        	</when>
+	        	<when test="store != null">
+	        		<![CDATA[AND ms.store_name like concat('%',#{store},'%')]]>
+	        	</when>
+	        </choose>
+	    <![CDATA[	   
+			ORDER BY idx DESC
+			LIMIT #{limitFrom}, #{countperpage}
+		]]>
+    </select>
+    
+    <select id="selectPamphletTotalCntbyTag" resultType="int">
+    	<![CDATA[
+            SELECT COUNT(*) AS totalcnt
+             FROM (SELECT 1
+                       FROM mega_pamphlet mp
+                               ,mega_tag mt
+                               ,mega_store ms
+                      WHERE mp.idx = mt.category_idx 
+                         AND mt.category_flag = 'PP'
+                         AND mp.store = ms.store_no      
+                         AND mp.usage_flag = 'Y'                    
+         ]]>
+			<choose>
+	        	<when test="tag != null">
+	        		<![CDATA[AND mt.tag like concat('%',#{tag},'%')]]>
+	        	</when>
+	        </choose>
+	    <![CDATA[	   
+                  GROUP BY mp.idx
+                               ,mp.title
+                               ,mp.reg_date
+                               ,mp.tag) sub
+         ]]>
+    </select>    
+    
+    <select id="selectPamphletListbyTag" resultType="hashmap">
+        <![CDATA[
+    	  SELECT mp.idx
+    	           ,mp.title
+    	           ,mp.reg_date
+    	           ,mp.tag
+    	           ,ms.store_name
+           FROM mega_pamphlet mp
+                   ,mega_tag mt
+                   ,mega_store ms
+          WHERE mp.idx = mt.category_idx 
+             AND mt.category_flag = 'PP'
+             AND mp.store = ms.store_no 
+             AND mp.usage_flag = 'Y'
+             ]]>
+			<choose>
+	        	<when test="tag != null">
+	        		<![CDATA[AND mt.tag like concat('%',#{tag},'%')]]>
+	        	</when>
+	        </choose>
+	    <![CDATA[	   
+      GROUP BY mp.idx
+                   ,mp.title
+                   ,mp.reg_date
+                   ,mp.tag
+      ORDER BY mp.idx DESC
+            LIMIT #{limitFrom}, #{countperpage}
+        ]]>
+    </select>      
+    
+    <select id="selectPamphletDetail" parameterType="int" resultType="com.megamart.pamphlet.entity.PamphletEntity">
+    	<![CDATA[
+    		SELECT mp.idx
+    		         ,mp.title
+    		         ,mp.reg_date
+    		         ,mp.store
+    		         ,ms.store_name
+    		         ,mp.page_size
+    		         ,mp.page_count
+    		         ,mp.tag
+    		         ,mp.usage_flag
+    		         ,mp.created_date
+    		         ,mp.created_by
+			FROM mega_pamphlet mp, mega_store ms
+		   WHERE mp.idx = #{idx}
+		       AND mp.store = ms.store_no
+    	]]>
+    </select>
+    
+    <insert id="insertPamphlet" parameterType="com.megamart.pamphlet.entity.PamphletEntity">
+    	<![CDATA[
+    		INSERT INTO mega_pamphlet (
+    		    idx
+    		   ,title
+    		   ,reg_date
+    		   ,store
+    		   ,page_size
+    		   ,page_count
+    		   ,tag
+    		   ,usage_flag
+    		   ,created_by
+    		   ,created_date
+    		) VALUES (
+    		   #{idx}
+    		  ,#{title}
+    		  ,#{reg_date}
+    		  ,#{store}
+    		  ,#{page_size}
+    		  ,#{page_count}
+    		  ,#{tag}
+    		  ,#{usage_flag}
+    		  ,#{created_by}
+    		  ,now())
+    	]]>
+    </insert>
+    
+    <update id="updatePamphlet" parameterType="com.megamart.pamphlet.entity.PamphletEntity">
+    	<![CDATA[
+    		UPDATE mega_pamphlet
+    		     SET title = #{title}
+    		         ,reg_date = #{reg_date}
+    		         ,store = #{store}
+    		         ,page_size = #{page_size}
+    		         ,page_count = #{page_count}
+    		         ,tag = #{tag}
+    		         ,usage_flag = #{usage_flag}
+    		         ,last_updated_by = #{last_updated_by}
+    		         ,last_update_date = now()
+    	 WHERE idx = #{idx}
+    	]]>
+    </update>
+    
+    <delete id="deletePamphlet" parameterType="int">
+    	<![CDATA[
+    		DELETE FROM mega_pamphlet
+    		WHERE idx = #{idx} 
+    	]]>
+    </delete>
+</mapper>

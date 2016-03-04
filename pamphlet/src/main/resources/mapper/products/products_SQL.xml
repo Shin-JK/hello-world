@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="products">
+    <select id="selectNewId" resultType="int">
+        <![CDATA[
+            SELECT nextval('mega_products_s1') AS newid
+        ]]>
+    </select>
+    
+    <select id="selectProductTotalCnt" resultType="int">
+        <![CDATA[
+            SELECT count(*) totalcnt
+            FROM mega_products mp
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh1 ON mp.category1 = mh1.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh2 ON mp.category2 = mh2.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh3 ON mp.category3 = mh3.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh4 ON mp.category4 = mh4.category_id
+		    WHERE 1 = 1 
+		       AND mp.usage_flag = 'Y'
+         ]]>
+         	<choose>
+         		<when test="key == 'all' ">
+         			<![CDATA[AND (mp.product_name like concat('%',#{all},'%')
+         			                 OR mh1.category_name like concat('%',#{all},'%') 
+         			                 OR mh2.category_name like concat('%',#{all},'%') 
+         			                 OR mh3.category_name like concat('%',#{all},'%')
+         			                 OR mh4.category_name like concat('%',#{all},'%')
+         			                 OR mp.tag like concat('%',#{all},'%')
+         			                 OR mp.copy like concat('%',#{all},'%') 
+         			                 OR mp.story_telling like concat('%',#{all},'%')
+         			                 OR mp.selling_point like concat('%',#{all},'%'))]]>
+         		</when>
+         	</choose>
+            <choose>
+	        	<when test="product_name != null">
+	        		<![CDATA[AND mp.product_name like concat('%',#{product_name},'%')]]>
+	        	</when>
+	        	<when test="category != null">
+	        		<![CDATA[AND (mh1.category_name like concat('%',#{category},'%') OR mh2.category_name like concat('%',#{category},'%') OR mh3.category_name like concat('%',#{category},'%') OR mh4.category_name like concat('%',#{category},'%'))]]>
+	        	</when>
+	        	<when test="copy != null">
+	        		<![CDATA[AND mp.copy like concat('%',#{copy},'%')]]>
+	        	</when>
+	        	<when test="story_telling != null">
+	        		<![CDATA[AND mp.story_telling like concat('%',#{story_telling},'%')]]>
+	        	</when>
+	        	<when test="selling_point != null">
+	        		<![CDATA[AND mp.selling_point like concat('%',#{selling_point},'%')]]>
+	        	</when>
+	        </choose>
+    </select>    
+    
+    <select id="selectProductList" resultType="hashmap">
+        <![CDATA[
+            SELECT mp.idx
+					, mp.product_name
+					, mp.category1
+					, mp.category2
+					, mp.category3
+					, mp.category4
+					, CONCAT( if(isnull(mh1.category_name), '', mh1.category_name), if(isnull(mh2.category_name), '', '  '),
+					          if(isnull(mh2.category_name), '', mh2.category_name), if(isnull(mh3.category_name), '', '  '),
+								 if(isnull(mh3.category_name), '', mh3.category_name), if(isnull(mh4.category_name), '', '  '),
+								 if(isnull(mh4.category_name), '', mh4.category_name)) category_desc
+					, mp.tag
+					, mp.copy
+					, mp.story_telling
+					, mp.selling_point
+					, mp.size
+					, DATE_FORMAT(mp.last_update_date, '%Y-%m-%d') created_date
+			FROM mega_products mp
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh1 ON mp.category1 = mh1.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh2 ON mp.category2 = mh2.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh3 ON mp.category3 = mh3.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh4 ON mp.category4 = mh4.category_id
+		    WHERE 1 = 1 
+		       AND mp.usage_flag = 'Y'
+         ]]>
+         	<choose>
+         		<when test="key == 'all' ">
+         			<![CDATA[AND (mp.product_name like concat('%',#{all},'%')
+         			                 OR mh1.category_name like concat('%',#{all},'%') 
+         			                 OR mh2.category_name like concat('%',#{all},'%') 
+         			                 OR mh3.category_name like concat('%',#{all},'%')
+         			                 OR mh4.category_name like concat('%',#{all},'%')
+         			                 OR mp.tag like concat('%',#{all},'%')
+         			                 OR mp.copy like concat('%',#{all},'%') 
+         			                 OR mp.story_telling like concat('%',#{all},'%')
+         			                 OR mp.selling_point like concat('%',#{all},'%'))]]>
+         		</when>
+         	</choose>
+            <choose>
+	        	<when test="product_name != null">
+	        		<![CDATA[AND mp.product_name like concat('%',#{product_name},'%')]]>
+	        	</when>
+	        	<when test="category != null">
+	        		<![CDATA[AND (mh1.category_name like concat('%',#{category},'%') OR mh2.category_name like concat('%',#{category},'%') OR mh3.category_name like concat('%',#{category},'%') OR mh4.category_name like concat('%',#{category},'%'))]]>
+	        	</when>
+	        	<when test="copy != null">
+	        		<![CDATA[AND mp.copy like concat('%',#{copy},'%')]]>
+	        	</when>
+	        	<when test="story_telling != null">
+	        		<![CDATA[AND mp.story_telling like concat('%',#{story_telling},'%')]]>
+	        	</when>
+	        	<when test="selling_point != null">
+	        		<![CDATA[AND mp.selling_point like concat('%',#{selling_point},'%')]]>
+	        	</when>
+	        </choose>
+	    <![CDATA[	   
+			ORDER BY mp.idx DESC
+			LIMIT #{limitFrom}, #{countperpage}
+		]]>
+    </select>
+    
+    <select id="selectProductTotalCntbyTag" resultType="int">
+    	<![CDATA[
+            SELECT COUNT(*) AS totalcnt
+             FROM (SELECT 1
+                       FROM mega_products mp
+                               ,mega_tag mt
+                      WHERE mp.idx = mt.category_idx 
+                         AND mt.category_flag = 'PD' 
+                         AND mp.usage_flag = 'Y'                    
+         ]]>
+			<choose>
+	        	<when test="tag != null">
+	        		<![CDATA[AND mt.tag like concat('%',#{tag},'%')]]>
+	        	</when>
+	        </choose>
+	    <![CDATA[	   
+                  GROUP BY mp.idx) sub
+         ]]>
+    </select>    
+    
+    <select id="selectProductListbyTag" resultType="hashmap">
+        <![CDATA[
+    	  SELECT mp.idx
+				  , max(mp.product_name) product_name
+				  , max(mp.category1) category1
+				  , max(mp.category2) category2
+				  , max(mp.category3) category3
+				  , max(mp.category4) category4
+				  , CONCAT( if(isnull(max(mh1.category_name)), '', max(mh1.category_name)), if(isnull(max(mh2.category_name)), '', '  '),
+				            if(isnull(max(mh2.category_name)), '', max(mh2.category_name)), if(isnull(max(mh3.category_name)), '', '  '),
+				 			 if(isnull(max(mh3.category_name)), '', max(mh3.category_name)), if(isnull(max(mh4.category_name)), '', '  '),
+							 if(isnull(max(mh4.category_name)), '', max(mh4.category_name))) category_desc
+				  , max(mp.tag) tag
+				  , max(mp.copy) copy
+				  , max(mp.story_telling) story_telling
+				  , max(mp.selling_point) selling_point
+				  , max(mp.size) size
+				  , DATE_FORMAT(max(mp.last_update_date), '%Y-%m-%d') created_date
+		   FROM mega_tag mt
+			      , mega_products mp
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh1 ON mp.category1 = mh1.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh2 ON mp.category2 = mh2.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh3 ON mp.category3 = mh3.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh4 ON mp.category4 = mh4.category_id
+          WHERE mp.idx = mt.category_idx 
+             AND mt.category_flag = 'PD'
+             AND mp.usage_flag = 'Y'
+             ]]>
+			<choose>
+	        	<when test="tag != null">
+	        		<![CDATA[AND mt.tag like concat('%',#{tag},'%')]]>
+	        	</when>
+	        </choose>
+	    <![CDATA[	   
+      GROUP BY mp.idx
+      ORDER BY mp.idx DESC
+            LIMIT #{limitFrom}, #{countperpage}
+        ]]>
+    </select>      
+    
+    <select id="selectProductDetail" parameterType="int" resultType="com.megamart.products.entity.ProductsEntity">
+    	<![CDATA[
+    		SELECT mp.idx
+					, mp.product_name
+					, mp.category1
+					, mp.category2
+					, mp.category3
+					, mp.category4
+					, CONCAT( if(isnull(mh1.category_name), '', mh1.category_name), if(isnull(mh2.category_name), '', '  '),
+					          if(isnull(mh2.category_name), '', mh2.category_name), if(isnull(mh3.category_name), '', '  '),
+								 if(isnull(mh3.category_name), '', mh3.category_name), if(isnull(mh4.category_name), '', '  '),
+								 if(isnull(mh4.category_name), '', mh4.category_name)) category_desc
+					, mp.tag
+					, mp.copy
+					, mp.story_telling
+					, mp.selling_point
+					, mp.size
+					, mp.usage_flag
+					, DATE_FORMAT(mp.last_update_date, '%Y-%m-%d') created_date
+					FROM mega_products mp
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh1 ON mp.category1 = mh1.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh2 ON mp.category2 = mh2.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh3 ON mp.category3 = mh3.category_id
+					LEFT OUTER
+					JOIN mega_product_hierarchy mh4 ON mp.category4 = mh4.category_id
+		    WHERE 1 = 1 
+		       AND mp.idx = #{idx}
+    	]]>
+    </select>
+    
+    <insert id="insertProduct" parameterType="com.megamart.products.entity.ProductsEntity">
+    	<![CDATA[
+    		INSERT INTO mega_products (
+    		    idx
+    		   ,product_name
+    		   ,category1
+    		   ,category2
+    		   ,category3
+    		   ,category4
+    		   ,tag
+    		   ,copy
+    		   ,story_telling
+    		   ,selling_point
+    		   ,size
+    		   ,usage_flag
+    		   ,created_by
+    		   ,created_date
+    		   ,last_updated_by
+    		   ,last_update_date
+    		) VALUES (
+    		   #{idx}
+    		  ,#{product_name}
+    		  ,#{category1}
+    		  ,#{category2}
+    		  ,#{category3}
+    		  ,#{category4}
+    		  ,#{tag}
+    		  ,#{copy}
+    		  ,#{story_telling}
+    		  ,#{selling_point}
+    		  ,#{size}
+    		  ,#{usage_flag}
+    		  ,#{created_by}
+    		  ,now()
+    		  ,#{created_by}
+    		  ,now())
+    	]]>
+    </insert>
+    
+    <update id="updateProduct" parameterType="com.megamart.products.entity.ProductsEntity">
+    	<![CDATA[
+    		UPDATE mega_products
+    		     SET product_name = #{product_name}
+    		         ,category1 = #{category1}
+    		         ,category2 = #{category2}
+    		         ,category3 = #{category3}
+    		         ,category4 = #{category4}
+    		         ,tag = #{tag}
+    		         ,copy = #{copy}
+    		         ,story_telling = #{story_telling}
+    		         ,selling_point = #{selling_point}
+    		         ,size = #{size}
+    		         ,usage_flag = #{usage_flag}
+    		         ,last_updated_by = #{last_updated_by}
+    		         ,last_update_date = now()
+    	 WHERE idx = #{idx}
+    	]]>
+    </update>
+    
+    <delete id="deleteProduct" parameterType="int">
+    	<![CDATA[
+    		DELETE FROM mega_products
+    		WHERE idx = #{idx} 
+    	]]>
+    </delete>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="common.tag">
+     <insert id="insertTag" parameterType="com.megamart.common.entity.TagEntity">
+    	<![CDATA[
+    		INSERT INTO mega_tag (
+    			category_flag
+    			,category_idx
+    			,tag
+    			,tag_seq
+    		) VALUES (
+    		#{category_flag}
+    		,#{category_idx}
+    		,#{tag}
+    		,#{tag_seq})
+    	]]>
+    </insert>
+    
+    <delete id="deleteTag" parameterType="com.megamart.common.entity.TagEntity">
+		<![CDATA[
+			DELETE
+ 			 FROM mega_tag
+		    WHERE category_flag=#{category_flag} 
+		       AND category_idx= #{category_idx}
+		]]>
+	</delete>
+	
+	<select id="selectTag" resultType="hashmap">
+		<![CDATA[
+			SELECT mt.tag
+			         ,mt.tag_seq
+             FROM mega_tag mt
+           WHERE mt.category_flag =#{category_flag} 
+              AND mt.category_idx =#{category_idx}
+           ORDER BY mt.tag_seq
+		]]>
+	</select>
+</mapper>

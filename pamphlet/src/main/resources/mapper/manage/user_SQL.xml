@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="manage.user">
+     <select id="selectuserList" resultType="hashmap">
+        <![CDATA[
+            SELECT empno
+            		, name
+            		, password
+			 FROM mega_user
+		    ORDER BY empno
+		]]>
+    </select>
+    <select id="selectuser" resultType="hashmap">
+		<![CDATA[
+			SELECT empno, name, password
+			 FROM mega_user
+			WHERE empno = #{empno}
+		]]>
+	</select>
+    <insert id="insertuser" parameterType="com.megamart.manage.entity.UserEntity">
+    	<![CDATA[
+    		INSERT INTO mega_user(
+   				empno
+           		, name
+           		, password
+    		 ) VALUES (
+    		   #{empno}
+    		  ,#{name}
+    		  ,#{password}
+    		 )
+    	]]>
+    </insert>
+    
+    <update id="updateuser" parameterType="com.megamart.manage.entity.UserEntity">
+    	<![CDATA[
+    		UPDATE mega_user
+    		     SET password = #{password}
+            		, name = #{name}
+            WHERE empno = #{empno}	
+    	]]>
+    </update>
+    
+    <delete id="deleteuser" parameterType="String">
+    	<![CDATA[
+    		DELETE mega_user WHERE empno = ${empno}
+    	]]>
+    </delete>    
+</mapper>

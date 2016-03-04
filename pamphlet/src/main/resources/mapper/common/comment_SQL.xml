@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common.comment">
+	<insert id="insertComment" parameterType="com.megamart.common.entity.CommentEntity">
+    	<![CDATA[
+    		INSERT INTO mega_storytelling_comments (
+    		   idx
+    		  ,category_flag
+    		  ,category_idx
+    		  ,depth
+    		  ,parent_idx
+    		  ,comments
+    		  ,password
+    		  ,created_by
+    		  ,created_date
+    		) VALUES (
+    		  #{idx}
+    		 ,#{category_flag}
+    		 ,#{category_idx}
+    		 ,#{depth}
+    		 ,#{parent_idx}
+    		 ,#{comments}
+    		 ,#{password}
+    		 ,#{created_by}
+    		 ,NOW())
+    	]]>
+	</insert>
+	<update id="updateComment">
+		<![CDATA[
+			UPDATE mega_storytelling_comments
+			     SET comments = #{comments}
+			         ,password = #{password}
+			         ,created_date = now()
+			WHERE idx = #{idx}
+		]]>
+	</update>
+	<delete id="deleteComment" parameterType="int">
+		<![CDATA[
+			DELETE
+ 			 FROM mega_storytelling_comments
+		    WHERE idx= #{idx}
+		]]>
+	</delete>
+	
+	<select id="selectNewId" resultType="int">
+        <![CDATA[
+            SELECT nextval('mega_storytelling_comments_s1') AS newid
+        ]]>
+    </select>
+	<select id="selectCommentList" resultType="hashmap">
+		<![CDATA[
+			SELECT a.idx
+	    		  ,a.category_flag
+	    		  ,a.category_idx
+	    		  ,a.depth
+	    		  ,a.parent_idx
+	    		  ,a.comments
+	    		  ,b.empno
+	    		  ,b.name As created_by
+	    		  ,date_format(a.created_date, '%Y-%m-%d') AS created_date
+            FROM mega_storytelling_comments a, mega_user b
+           WHERE a.category_flag = #{category_flag} 
+              AND a.category_idx = #{category_idx}
+              and a.created_by = b.empno
+           ORDER BY parent_idx desc, depth, idx desc
+		]]>
+	</select>
+	<select id="selectCommentCount" resultType="int">
+		<![CDATA[
+			SELECT count(*)
+            FROM mega_storytelling_comments
+           WHERE category_flag = #{category_flag} 
+              AND category_idx = #{category_idx}
+		]]>
+	</select>
+	<select id="selectCommentPassword" parameterType="int" resultType="String">
+		<![CDATA[
+			SELECT password
+            FROM mega_storytelling_comments
+           WHERE idx = #{idx}
+		]]>
+	</select>
+	<select id="selectCommentuser" parameterType="String" resultType="hashmap">
+		<![CDATA[
+			SELECT mcu.pamphlet_comment_use
+					, mcu.products_comment_use
+			 FROM mega_comment_user mcu
+			WHERE mcu.empno = #{empno}
+		]]>
+	</select>
+</mapper>

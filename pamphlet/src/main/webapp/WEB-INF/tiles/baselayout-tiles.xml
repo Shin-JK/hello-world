@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+  <definition name="tiles.baselayout" template="/WEB-INF/jsp/tiles/baselayout.jsp">
+    <put-attribute name="title" value="메가마트 상품 스토리텔링 DB" />
+    <put-attribute name="menu" value="/WEB-INF/jsp/common/menu.jsp" />
+    <put-attribute name="contents" value="/WEB-INF/jsp/common/searchlist.jsp" />
+    <!-- <put-attribute name="footer" value="/WEB-INF/jsp/common/footer.jsp" /> -->
+  </definition>
+  
+  <definition name="tiles.common.searchlist" extends="tiles.baselayout">
+  	<put-attribute name="title" value="통합검색"/>
+  </definition>
+  
+  <definition name="tiles.pamphlet.list" extends="tiles.baselayout">
+  	<put-attribute name="title" value="전단리스트"/>
+  	<put-attribute name="contents" value="/WEB-INF/jsp/pamphlet/pamphletlist.jsp"/>
+  </definition>  
+  <definition name="tiles.pamphlet.view" extends="tiles.baselayout">
+  	<put-attribute name="title" value="전단상세"/>
+  	<put-attribute name="contents" value="/WEB-INF/jsp/pamphlet/pamphletview.jsp"/>
+  </definition>
+  <definition name="tiles.pamphlet.write" extends="tiles.baselayout">
+  	<put-attribute name="title" value="전단등록"/>
+  	<put-attribute name="contents" value="/WEB-INF/jsp/pamphlet/pamphletwrite.jsp"/>
+  </definition>
+  
+  <definition name="tiles.products.list" extends="tiles.baselayout">
+  	<put-attribute name="title" value="상품리스트"/>
+  	<put-attribute name="contents" value="/WEB-INF/jsp/products/productslist.jsp"/>
+  </definition>  
+  <definition name="tiles.products.view" extends="tiles.baselayout">
+  	<put-attribute name="title" value="상품상세"/>
+  	<put-attribute name="contents" value="/WEB-INF/jsp/products/productsview.jsp"/>
+  </definition>
+  <definition name="tiles.products.write" extends="tiles.baselayout">
+  	<put-attribute name="title" value="상품등록"/>
+  	<put-attribute name="contents" value="/WEB-INF/jsp/products/productswrite.jsp"/>
+  </definition>
+</tiles-definitions>

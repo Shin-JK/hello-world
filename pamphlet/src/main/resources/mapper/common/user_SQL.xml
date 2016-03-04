@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="common.user">
+     <select id="selectusermenu" resultType="hashmap">
+		<![CDATA[
+			SELECT left(mm.menu_code,2) menu_group
+					, mm.menu_code
+			        , mm.menu_name
+			        , mm.menu_path
+			        , mm.has_child
+			FROM mega_user mu
+			      , mega_menu mm
+			      , mega_menu_user_mapping mum
+		  WHERE mu.empno = mum.empno 
+		     AND mm.menu_code LIKE CONCAT(mum.menu_code, '%') 
+		     AND mm.usage_flag = 'Y'
+		     AND mu.empno = #{empno}
+		  ORDER BY mm.menu_code ASC
+		]]>
+	</select>
+</mapper>
